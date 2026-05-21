@@ -4,12 +4,24 @@
 <meta name="robots" content="noindex" />
 {{ end }}
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="author" content="{{ if .Params.author }}{{ .Params.author }}{{ else }}{{ range .Site.Params.Author }}{{ . }} {{ end }}{{ end }}">
+<meta name="author" content="{{ with .Params.author }}{{ . }}{{ else }}{{ with site.Params.author }}{{ . }}{{ end }}{{ end }}">
 <meta name="description" content="{{ if .IsHome }}{{ .Site.Params.homeSubtitle }}{{ else }}{{ if .Params.Description }}{{ .Params.Description }}{{ else }}{{ .Summary | plainify }}{{ end }}{{ end }}" />
 <meta name="keywords" content="{{ .Site.Params.keywords }}{{ if .Params.tags }}{{ range .Params.tags }}, {{ . }}{{ end }}{{ end }}" />
 <meta name="robots" content="noodp" />
 <meta name="theme-color" content="{{ .Site.Params.themeColor }}" />
+<meta name="color-scheme" content="dark light" />
 <link rel="canonical" href="{{ .Permalink }}" />
+
+{{ $defaultTheme := default "dark" .Site.Params.defaultTheme }}
+{{ if eq $defaultTheme "dark" }}
+<style>
+    html, body { background-color: #232425; color: #a9a9b3; }
+</style>
+{{ else }}
+<style>
+    html, body { background-color: #ffffff; color: #222222; }
+</style>
+{{ end }}
 
 {{ block "title" . }}
     <title>
@@ -23,7 +35,7 @@
 
 <!-- CSS -->
 {{ $opts := dict "transpiler" "libsass" "targetPath" "main.css" "outputStyle" "compressed" "enableSourceMap" true }}
-{{ with resources.Get "scss/main.scss" | toCSS $opts | minify | fingerprint }}
+{{ with resources.Get "scss/main.scss" | css.Sass $opts | minify | fingerprint }}
   <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" crossorigin="anonymous">
 {{ end }}
 
@@ -37,11 +49,11 @@
 <!-- Icons -->
 {{- partial "favicons.html" . }}
 
-{{ template "_internal/schema.html" . }}
-{{ template "_internal/twitter_cards.html" . }}
+{{ partial "schema.html" . }}
+{{ partial "twitter_cards.html" . }}
 
 {{ if isset .Site.Taxonomies "series" }}
-    {{ template "_internal/opengraph.html" . }}
+    {{ partial "opengraph.html" . }}
 {{ end }}
 
 {{ range .Params.categories }}
@@ -69,8 +81,8 @@
 {{- end }}
 
 <!-- Google Analytics internal template -->
-{{- if .Site.Config.Services.GoogleAnalytics.ID }}
-    {{ template "_internal/google_analytics.html" . }}
+{{- with site.Config.Services.GoogleAnalytics.ID }}
+    {{ partial "google_analytics.html" $ }}
 {{- end }}
 
 <!-- Plausible.io -->

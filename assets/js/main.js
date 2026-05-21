@@ -9,12 +9,18 @@ const themeToggle = document.querySelector(".theme-toggle");
 const chosenTheme = window.localStorage && window.localStorage.getItem("theme");
 const chosenThemeIsDark = chosenTheme == "dark";
 const chosenThemeIsLight = chosenTheme == "light";
+const defaultTheme =
+  document.documentElement.getAttribute("data-default-theme") || "dark";
 
 // Detect the color scheme the operating system prefers.
 function detectOSColorTheme() {
   if (chosenThemeIsDark) {
     document.documentElement.setAttribute("data-theme", "dark");
   } else if (chosenThemeIsLight) {
+    document.documentElement.setAttribute("data-theme", "light");
+  } else if (defaultTheme === "dark") {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else if (defaultTheme === "light") {
     document.documentElement.setAttribute("data-theme", "light");
   } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
     document.documentElement.setAttribute("data-theme", "dark");
@@ -54,4 +60,5 @@ if (themeToggle) {
   detectOSColorTheme();
 } else {
   localStorage.removeItem("theme");
+  detectOSColorTheme();
 }

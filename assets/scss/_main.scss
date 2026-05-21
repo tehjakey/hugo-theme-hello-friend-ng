@@ -330,8 +330,9 @@ ol ol {
   flex: 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
+  min-height: 100vh;
 }
 
 .content-center {
@@ -341,9 +342,12 @@ ol ol {
   align-items: center;
   justify-content: center;
   margin: 0;
+  min-height: 0;
+  padding: 3rem 0;
 
   @media #{$media-size-phone} {
     margin-top: 0;
+    padding: 2rem 0;
   }
 }
 
